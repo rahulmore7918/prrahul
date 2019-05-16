@@ -1,0 +1,36 @@
+block content
+	main.site-content
+		include ../partials/_header
+		#main-container
+			include ../partials/_sidebar
+			div.right-col
+				.centered-container
+					article
+						div.heading
+							h2 Account Overview
+						div.inline-grey-box-wrapper.cards
+							.card
+								.card-block
+									h3.card-title Applications
+									p.card-text List of all applications
+									a.btn.blue(href="list") View All
+							.card
+								.card-block
+									h3.card-title Tenants
+									p.card-text List of all tenants
+									a.btn.blue(href="tenants") View All
+									button.btn.btn-default(ng-click="ctrl.state.go('tenants.create')") Create
+
+						div.inline-grey-box-wrapper.cards
+
+							.card
+								.card-block
+									h3.card-title Events
+									p.card-text List of all Event Log
+									a.btn.blue(href="logevent") View All
+
+							.card
+								.card-block
+									h3.card-title Release Docs
+									p.card-text List of all Releases
+									a.btn.blue(href="explorer") View All

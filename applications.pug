@@ -1,0 +1,30 @@
+block content
+    main.site-content
+        include ../partials/_header
+        #main-container
+            include ../partials/_sidebar
+            div.right-col
+                .centered-container
+                    .dashboard-wrapper
+                        .container
+                            .row
+                                .col-md-12
+                                    h1 Applications List
+                                    //- button.btn.btn-default(ng-click="ctrl.createApplication()") Create
+                                    table.table.table-striped
+                                        thead
+                                            tr
+                                                th Name
+                                                th Actions
+                                        tbody
+                                            tr(ng-repeat='application in ctrl.applicationsList')
+                                                td
+                                                    a(ui-sref="packages.list({app_id:application._id})") {{application.name}}
+                                                td
+                                                    span.pull-right
+                                                        button.btn-sm.btn(ng-click='ctrl.editApplication($index)')
+                                                            i.material-icons create
+                                                        //- button.btn-sm.btn.glyphicon.glyphicon-remove(ng-click='ctrl.removeApplication($index)')
+
+
+                                    div.alert.alert-danger(ng-show = "ctrl.noApplications") No applications added
