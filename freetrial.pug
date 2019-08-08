@@ -1,0 +1,73 @@
+extends ../../../components/pug/_layouts/main
+
+block content
+    include ../../../components/pug/_partials/_secondary-header
+    main.site-content#signup-stage
+        section.full-height-wrapper.centered-form
+            div.container
+                div#overlay(ng-show="ctrl.showSpinner")
+                    div.spinner-wrapper
+                        rotating-plane-spinner
+                //- TRIAL SIGN IN
+                div.outer-form-container
+                    div.title-container
+                        h2.name Create a free account
+                        p.fine-print Scan open source projects | No credit card required
+                    div.form-container
+                        form.form(name='trialform', ng-submit='ctrl.getstarted(trialform)', novalidate='')
+                            div.form-group
+                                label(for="subdomain")
+                                    span.inline-icon-wrapper
+                                        span.text Your Domain*
+                                        //- a.field-tip(href="#")
+                                            i.ic-info
+                                            span.tip-content Your domain name
+
+                                input.line-input.form-text.subdomin-text(autofocus,ng-minlength='6', maxlength='40',max='40', type='text', name='subdomain', ng-pattern="/^[a-zA-Z0-9]*$/", placeholder='Ex: companyabc', ng-model='ctrl.user.subdomain', required='', ng-maxlength='40', mongoose-error='', ng-class='{ "error": trialform.subdomain.$invalid && (trialform.subdomain.$touched || freesubmitted)}')
+                                span.subdomain .{{ctrl.gamma_os_postfix}}.mygamma.io
+                                p.help-block.help-block-error(ng-show='trialform.subdomain.$error.pattern && trialform.subdomain.$touched') Only letters and numbers are allowed, no spaces.
+                                p.help-block.help-block-error(ng-show='trialform.subdomain.$error.required && (trialform.subdomain.$touched || freesubmitted)') Domain is required
+                                p.help-block.help-block-error(ng-show='trialform.subdomain.$error.mongoose && trialform.subdomain.$touched') This Domain is not available.
+                                p.help-block.help-block-error(ng-show='(trialform.subdomain.$error.maxlength && trialform.subdomain.$touched)') Domain should not be more than 40 characters.
+                                p.help-block.help-block-error(ng-show='(trialform.subdomain.$error.minlength && trialform.subdomain.$touched)') Domain must be at least 6 characters.
+                                p.fine-print *Must contain at least 6 characters, using only letters and numbers. Cannot be modified after account setup.
+                            div.form-group
+                                label(for="name") Full Name
+                                input#name.line-input.form-text(type='text',maxlength='100',max='100', name='name', placeholder='', ng-model='ctrl.user.name', ng-class='{ "error": trialform.name.$invalid && (trialform.name.$touched || freesubmitted)}', required='')
+                                p.help-block.help-block-error(ng-show='trialform.name.$error.required && (trialform.name.$touched || freesubmitted)') Name is required
+                                p.help-block.help-block-error(ng-show='(trialform.name.$error.maxlength && trialform.name.$touched)')  Full Name should not be more than 100 characters.
+                            div.form-group
+                                label(for="email") Email
+                                input#email.line-input.form-text(type='email', name='email', ng-pattern="ctrl.email_pattern", placeholder='', ng-model='ctrl.user.email', required='', mongoose-error='', ng-class='{ "error": trialform.email.$invalid && (trialform.email.$touched || freesubmitted)}')
+                                p.help-block.help-block-error(ng-show='trialform.email.$error.required && (trialform.email.$touched || freesubmitted)') What's your email address?
+                                p.help-block.help-block-error(ng-show='(trialform.email.$error.pattern && trialform.email.$touched) || (trialform.email.$invalid && trialform.email.$touched && !trialform.email.$error.mongoose && !trialform.email.$error.required)') Doesn't look like a valid email.
+                                //- p.help-block.help-block-error(ng-show='trialform.email.$error.mongoose && freesubmitted') {{ctrl.email_error_msg}}
+                                p.help-block.help-block-error(ng-show='trialform.email.$error.mongoose && freesubmitted && ctrl.email_error_flag=="same"') Email already exists.
+                                p.help-block.help-block-error(ng-show='trialform.email.$error.mongoose && freesubmitted && ctrl.email_error_flag=="different"') This email already exists, please sign in or use a different email.
+                            div.form-group
+                                label(for="password") Password
+                                input#password.line-input.form-text(type='password', name='password', ng-model='ctrl.user.password', required='', mongoose-error='', ng-class='{ "error": trialform.password.$invalid && (trialform.password.$touched || freesubmitted)}', ng-minlength='8', ng-maxlength='16',max='16', placeholder='Combine letters and numbers')
+                                p.help-block.help-block-error(ng-show='(trialform.password.$error.required && (trialform.password.$touched || freesubmitted))') Password is required.
+                                p.help-block.help-block-error(ng-show='(trialform.password.$error.minlength && trialform.password.$touched)') Password must be at least 8 characters.
+                                p.help-block.help-block-error(ng-show='(trialform.password.$error.maxlength && trialform.password.$touched)') Password should not be more than 16 characters.
+
+                            div.form-group.errors
+                                p.help-block.help-block-error(ng-show='ctrl.errors.chargebeeflag') {{ ctrl.errors.chargebee }}
+
+                            div.custom-chkbox
+                                input#checkboxfour.checkbox-custom(type='checkbox', name="checkagree", ng-model="ctrl.user.checkagree", required="")
+                                label.checkbox-custom-label(for='checkboxfour')
+                                span.fine-print I agree to the #[a(href='/terms' target="_blank") Terms of Service] and #[a(href='/privacypolicy' target="_blank") Privacy Policy]
+                                p.help-block.help-block-error(ng-show='trialform.checkagree.$error.required && (trialform.checkagree.$touched || freesubmitted)') Please agree to the Terms of Service and Privacy Policy.
+                            div.btn-container
+                                //- p.fine-print By clicking, I agree to the #[a(href='/terms' target="_blank") Terms of Service] and #[a(href='/privacypolicy' target="_blank") Privacy Policy]
+                                button.btn.green(type="submit" ng-click="freesubmitted=true")
+                                    div.text-container
+                                        span.btn-text Create your account
+                                div.inline-icon-wrapper.tooltip-wrapper
+                                    a.field-tip.feature-link(href="#")
+                                        i.ic-locked
+                                        span Secure Server
+                                        span.tip-content We take data privacy very seriously. This is why all communication between your web browser and Gamma is encrypted using an industry standard SSL certificate issued by Amazon. You can always personally verify this by clicking on the lock symbol in your browser.
+                    div.footer
+                        p.fine-print Already have an account? #[a(href='/login') Sign in]
