@@ -4,6 +4,48 @@ var g = (function(gamma) {
 
     gamma.available_plugin_contexts = ['project','subsystem','modules','components','files'];
 
+    gamma.ldapDirectoryAttributes = [
+        {
+            name: 'Open LDAP',
+            key: 'openldap',
+            userSchema: {
+                ldapUserObjectclass: 'inetorgperson',
+                ldapUserFilter: '(objectclass=inetorgperson)',
+                // ldapUserUsername: 'cn',
+                // ldapUserUsernameRdn: 'cn',
+                ldapUserFirstname: 'givenName',
+                ldapUserLastname: 'sn',
+                ldapUserEmail: 'mail',
+                // ldapUserEncryption: 'sha',
+                ldapExternalId: 'entryUUID'
+            },
+            // groupSchema: {
+            //     ldapGroupObjectclass: 'groupOfUniqueNames',
+            //     ldapGroupFilter: '(objectclass=groupOfUniqueNames)',
+            //     // ldapGroupName: 'cn'
+            // }
+        },
+        {
+            name: 'Microsoft Active Directory',
+            key: 'msad',
+            userSchema: {
+                ldapUserObjectclass: 'user',
+                ldapUserFilter: '(&(objectCategory=Person)(sAMAccountName=*))',
+                // ldapUserUsername: 'cn',
+                // ldapUserUsernameRdn: 'cn',
+                ldapUserFirstname: 'givenName',
+                ldapUserLastname: 'sn',
+                ldapUserEmail: 'mail',
+                // ldapUserEncryption: 'userPassword',
+                ldapExternalId: 'objectGUID'
+            },
+            // groupSchema: {
+            //     ldapGroupObjectclass: 'group',
+            //     ldapGroupFilter: '(objectCategory=Group)',
+            //     // ldapGroupName: 'cn'
+            // }
+        }
+    ];
     gamma.plugins = [
         {
             "name": "Dashboard",
@@ -54,8 +96,17 @@ var g = (function(gamma) {
             "url": "D:\\tea\\tea\\gamma\\plugins/subsystemDashboard",
             "details":"Basic details of repository."
         },
+
+            "name": "Repository Trends",
+            "id": "repository_trends",
+            "plugin_group": "dashboard",
+            "url": "D:\\tea\\tea\\gamma\\plugins/repositoryTrends",
+            "details": "Trends graphs of repository."
+        },
         {
-            "name": " Commit History",
+            "name": "Commit History",
+
+
             "id": "commit_history",
             "plugin_group": "dashboard",
             "url": "D:\\tea\\tea\\gamma\\plugins/commitHistory",
@@ -225,22 +276,7 @@ var g = (function(gamma) {
             "name": "Issues",
             "id": "issues",
             "plugin_group":"issues",
-            "url": "D:\\tea\\tea\\gamma\\plugins/issues",
-            "details":"Issues integration plugin for Gamma."
-        },
-        {
-            "name": "Tasks",
-            "id": "tasks",
-            "plugin_group":"issues",
-            "url": "D:\\tea\\tea\\gamma\\plugins/tasks",
-            "details":"Tasks integration plugin for Gamma."
-        },
-        {
-            "name": "Partitions",
-            "id": "partitions",
-            "plugin_group":"explorer",
-            "url": "D:\\tea\\tea\\gamma\\plugins/partitions",
-            "details":"Partitions integration plugin for Gamma."
+
         },
         {
             "name": "Component Dependency",
@@ -263,8 +299,7 @@ var g = (function(gamma) {
                                                 'FI': '#EE9F9F', 'FME': '#B7CEDF', 'SSP':'#BAB2DD', 'MF':'#79bad1', 'FC':'#edec82'};
     gamma.metrics_colors                        = {'NOM':'#4db6ac','NOS':'#cac80a','Complexity':'#90a4ae','CBO':'#8d6e63','RFC':'#ffab91','DOIH':'#f48fb1','LOC':'#ce93d8', 'NOP':'#b0bec5'};
     gamma.method_level_antipattern_colors = { 'BM': '#aa5766', 'DC': '#a6987d', 'FE': '#dcbca6', 'IC': '#d68e6e', 'SS': '#f7e380', 'CSS': '#7bab84',
-                                             'CSW': '#c9bb72', 'CSI': '#eb9244', 'TH': '#aeb1bd', 'DE': '#96CFEC', 'MC': '#8DD6A0', 'FO': '#E59A96',
-                                              'DCL': '#4C93BD', 'UM':'#78D4D0','GV':'#D8986C','CF':'#7fcaa7','CC':'#c69ac7'};
+
     gamma.code_issue_colors                     = ['#b64a63','#ffacac','#ff8cb5','#ff7e5f','#ffb09f','#ff2b66','#ff799e','#ff9595','#ffc8b3','#ff7475',
                                                   '#7583fe','#87cbfc','#3cdcfe','#69b6c8','#cdc8ff','#278cff','#4677f0','#daf7ff','#8cbdff','#6284b4',
                                                   '#7ca377','#d6ffd2','#99ff91','#c4df7e','#ceff58','#85be00','#5fff93','#77d797','#04dc61','#529560',
@@ -406,16 +441,17 @@ var g = (function(gamma) {
         {
             "plugins":
             {
-                "repository_dashboard": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": true, "createNewInstance": true, "pluginOptions": false, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-repository-dashboard"},
+
                 "repository_overview": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": true, "createNewInstance": true, "pluginOptions": false, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-repository"},
                 "kpi_dashboard": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": true, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-kpis"},
                 "release_management": { "required_snapshot": 2, "max_snapshot": 1, "resetBreadcrumb": true, "createNewInstance": true, "pluginOptions": false, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": ""},
                 "change_overview": { "required_snapshot": 2, "max_snapshot": 2, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-change-overview"},
                 "change_list": { "required_snapshot": 2, "max_snapshot": 2, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-change-overview-component"},
-                "commit_history": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-pull-request"},
+
+                "commit_history": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-devlopment-history"},
                 "code_editor": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-loc" },
                 "hotspot_distribution": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-hotspot-distribution-filled"},
-                "code_issues_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-code-quality"},
+
                 "duplication_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-duplication"},
                 "coverage_distribution": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-coverage"},
                 "metrics_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-metrics"},
@@ -423,8 +459,7 @@ var g = (function(gamma) {
                 "component_list": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-components"},
                 "coverage_component_list": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-coverage-by-component"},
                 "complex_method_list": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-test-hungry-methods" },
-                "unit_tests": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-unit-test"},
-                "module_dependency": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-dependency"},
+
                 "component_dependency": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-dependency"},
                 "node_summary": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": ""},
                 "city_view": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-city-view"},
@@ -437,8 +472,15 @@ var g = (function(gamma) {
         "modules" :
         {
             "plugins":
-            {
-              "hotspot_distribution": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-hotspot-distribution-filled" },
+
+              "module_dependency": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-dependency"},
+              "design_issue_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-design-issues"},
+              "kpi_dashboard": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": true, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-kpis"},
+              "code_issues_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-code-issues"},
+              "duplication_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-duplication"},
+              "metrics_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-metrics"},
+              "component_list": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-components"},
+
               "design_issue_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-design-issues"},
               "kpi_dashboard": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": true, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-kpis"},
               "code_issues_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-code-quality"},
@@ -446,6 +488,7 @@ var g = (function(gamma) {
               "metrics_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-metrics"},
               "component_list": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-components"},
               "module_dependency": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-dependency"},
+
               "node_summary": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": ""},
               "heatmap": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-heatmap"},
               "tree": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-tree"},
@@ -479,8 +522,9 @@ var g = (function(gamma) {
             {
               "file_explorer": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": false, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-document" },
              // "component_list": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": true, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-components" },
-             // "metrics_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-metrics" },
-             // "code_issues_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-code-quality"},
+
+             // "code_issues_details": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-code-issues"},
+
               "issues": { "required_snapshot": 1, "max_snapshot": 1, "resetBreadcrumb": false, "createNewInstance": true, "pluginOptions": true, "resetFilters": false, "showPlugin": true, "showSnapshotPanel": true, "pluginIcon": "ic-issues" }
             }
         },
@@ -514,7 +558,7 @@ var g = (function(gamma) {
             "icon": "ic-access-token"
         },
         "public_url": {
-            "icon": "ic-website"
+
         }
     };
     gamma.getIcon = function(key) {

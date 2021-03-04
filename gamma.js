@@ -38,13 +38,6 @@ var g = (function() {
             PATH_QUEUE_COUNT: "/repositories/scans/count",
 			PATH_CURRENT_ANALYSIS:"/repositories/scans",
 
-			PATH_BREADCRUMB: "/views/repositories/",
-			PATH_TREE:"/views/repositories/",
-			PATH_SERVER_TIME:"/metadata/servertime",
-			PATH_LOGOUT: "/auth/logout",
-			PAGE_LOGIN: "login",
-			PAGE_ERROR: "license-summary",
-			PAGE_TEMPERED: "license-deactivated"
 	    };
 
 		// ----- NOTIFICATIONS -----
@@ -94,7 +87,6 @@ var g = (function() {
 		// 	}else if(type =="js"){
 		// 		return "../"+name+"/plugin.js";
 		// 	}
-		// }
 
 		function sendErrorNotification(data,data_url,holder,notification_name,fadeout) {
 			data.holder 	= holder;
@@ -304,9 +296,7 @@ var g = (function() {
 						gamma.application_mode = configData.mode;
 						gamma.languages = configData.languages;
 						gamma.partial_languages = configData.partial_languages;
-						gamma.task_integration = configData.task_integration;
-						gamma.skip_license = configData.skip_license;
-						gamma.gamma_website_host = configData.gamma_website_host;
+
 						gamma.gamma_website_env = configData.gamma_website_env;
 						gamma.mixpanel_token = configData.mixpanel_token;
 						gamma.intercom_app_id = configData.intercom_app_id;
@@ -324,8 +314,7 @@ var g = (function() {
 						gamma.enableREScan = configData.enableREScan ;
 						gamma.enablePRScan = configData.enablePRScan ;
                         API_VERSION = configData.apiVersion;
-                        gamma.API_VERSION = API_VERSION;
-						gamma.BASE_URL = DOMAIN_NAME + "/api/" + API_VERSION;
+ma.BASE_URL = DOMAIN_NAME + "/api/" + API_VERSION;
 						if (configData.taskInsights == true || configData.taskInsights == "true") {
 							gamma.isTasksInsightsEnabled = true;
 						} else if (configData.taskInsights == false || configData.taskInsights == "false") {
@@ -385,7 +374,7 @@ var g = (function() {
 						} else {
 							eventObj.profile_properties['Paid domain'] = gamma.subdomain;
 						}
-						gamma.set_mixpanel_event("Gamma portal login", gamma.mixpanel_uid, eventObj);
+
 
 						localStorage.removeItem("user_login");
 					}
@@ -429,8 +418,7 @@ var g = (function() {
 		}
 
 		function loggedout() {
-			sessionStorage.clear();
-			localStorage.clear();
+
 			window.location.replace(g.paths.PAGE_LOGIN);
 			e.log("You have logout successfully");
 		}
@@ -492,7 +480,7 @@ var g = (function() {
 			'access_tokens': {},
 			'notifications': {},
 			'quality_profile': {},
-			'public_url': {}
+
 		};
 		gamma.tasks = {
 			'gamma_formatter':{},
@@ -507,6 +495,7 @@ var g = (function() {
 		gamma.application 					= {'project':{},'repository':{}};
 		gamma.issues_data 					= null;
 		gamma.leftMenuItem;
+
 
 		gamma.setLocale = function (locale) {
 			LOCALE = locale;
@@ -763,7 +752,7 @@ var g = (function() {
 				return 'Chrome';
 			}
 
-        };
+
 
 		gamma.getFormattedTime = function(timestamp1,timestamp2,useServerTime) {
 			var utc1 	= moment(timestamp1).utc();//new Date(timestamp1.getTime() + timestamp1.getTimezoneOffset() * 60000);
@@ -1021,6 +1010,7 @@ var g = (function() {
 								'LOC': (msg.LOC) ? msg.LOC : ''
 							}
 						};
+
 						var report_msg = {};
 						if (msg.status == "SUCCESS" || msg.status == "FAIL" || msg.status == "ABORT" || msg.status == 'CANCEL' || msg.status == 'QUEUED') {
                             if (gamma.hasPermission('MANAGE_LICENSE')) {
@@ -1051,7 +1041,7 @@ var g = (function() {
 									//Opening Userlane popup after first successful scan
 									// setTimeout(function(){
 									// 	Userlane('openAssistant');
-									// }, 2000);									
+
 								}
 							}
 							else if(msg.status == "FAIL" && msg.projectName !== undefined && msg.projectName != 'undefined')
@@ -1130,14 +1120,12 @@ var g = (function() {
 			});
 
 			socket.on('account_status',function(msg) {
-                //var report_msg = {status:'success',message:g.print(msg),details:'',analysis_error:true};
-				//g.addErrorAlert(report_msg);
-				var errorMsg = { "error": { "code": null, "name": "accountStatusUpdated", "message": g.print(msg), "status":"info" } }
+
 				g.addErrorAlert(errorMsg);
 				setTimeout(function(){
 					gamma.logout();
 				},3000);
-			});
+
 
 			socket.on('delete_subsystem',function(msg) {
 				e.notify('SOCKET_DELETE_SUBSYSTEM',msg);
@@ -1174,9 +1162,7 @@ var g = (function() {
 		 *
 		 * Example :-
 		 * Event with userId (gamma.mixpanel_uid) :- gamma.set_mixpanel_event("test me gamma ", 213);
-		 * Event with profileDetails 				     :- gamma.set_mixpanel_event("test me gamma ", 213 ,{ 'email': 'shahaji.patil@acellere.com', 'first_name': 'sameer', 'last_name': 'patil'});
-		 * Event with customDetails 				     :- gamma.set_mixpanel_event("test me gamma ", 213 , { 'project name': 'Gamma test Project  ','owner details':'shahaji patil' });
-		 * Event with Profile and Custom Details 	     :- gamma.set_mixpanel_event("test me gamma ", 213 ,{ 'email': 'shahaji.patil@acellere.com', 'first_name': 'sameer', 'last_name': 'patil','project name': 'Gamma test Project  ','owner details':'shahaji patil'});
+
 		**/
 		gamma.set_mixpanel_event = function (event, userId, eventDetails,increment) {
 			if (gamma.is_cloud) {

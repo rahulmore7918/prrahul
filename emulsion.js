@@ -106,7 +106,7 @@ var e  = (function() {
 					e.notify('401');
 					g.logout();
 		    	} else if (data.status == 404) {
-                    // tempered error
+
 		    	    window.location.href = g.PAGE_NOT_FOUND;
 		    	} else if (errorData.error.code == 1759) {
 					// tempered error
@@ -365,8 +365,7 @@ var e  = (function() {
 			dataType: 'json',
             data: params,
             success: function( data ) {
-				if(customResponse.success.isCustom && customResponse.success.message !== undefined){
-					if(customResponse.success.message!== null){
+
 						g.addToast(customResponse.success);
 					}
 				}else{

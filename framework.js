@@ -84,8 +84,7 @@ var g = (function(gamma) {
                         });
                     }
 				})();
-				//Userlane
-				gamma.userlaneTrigger(); 
+
 			}
 
 			//--------- Get pluginlist to be shown in ui---------------
@@ -182,7 +181,7 @@ var g = (function(gamma) {
 			ga('create', 'UA-69740286-1', 'auto');
 			ga('set', {
 				page: '/gamma/#' + localStorage.getItem('current_user'),
-				title: 'Gamma - '+historyManager.get('currentSubSystemName')+' : '+historyManager.get('currentPlugin').name
+
 			});
 			ga('send', 'pageview');/*,{ 'dimension1': historyManager.get('currentPlugin').name});*/
 		}
@@ -255,7 +254,7 @@ var g = (function(gamma) {
 								if((history_view.plugin_id == 'release_management' || history_view.plugin_id == 'subsystem_dashboard'))
 								{
 									sel_snaps[0] = gamma.searchObjectById(gamma.getSnapshotList(),history_view.request_data.snapshot_id_new);
-								}	
+
 								else if (history_view.plugin_id == 'repository_dashboard')
 								{
 									sel_snaps[0] = gamma.searchObjectById(gamma.getSnapshotList(), history_snaps[0].id);
@@ -277,16 +276,31 @@ var g = (function(gamma) {
 						$("#plugin_selector").hide();
 						function repoDetailsLoaded(data, status) {
 							if (status == 'success') {
-								g.setRepoMetaData(data);
+					if(history_view.context != 'root' && history_view.context != 'systems'){
+									g.setRepoMetaData(data);
+								}
 								gamma.loadFromHistory = true;
 								e.notify(gamma.notifications.PLUGIN_UPDATE);
-								$(document).attr('title','Gamma - '+historyManager.get('currentPlugin').name);
+								$(document).attr('title','Embold - '+historyManager.get('currentPlugin').name);
+
+								g.setRepoMetaData(data);
+								gamma.loadFromHistory = true;
+
 								if(gamma.googleAnalyzeCode != ""){
 									googleAnalyse();
 								}
 							}
 						}
+
+
+						if(history_view.context != 'root' && history_view.context != 'systems'){
+                            getRepositoryDetails(historyManager.get('currentSubSystemUid'),repoDetailsLoaded);
+                        }else{
+							repoDetailsLoaded({},"success");
+						}
+
 						getRepositoryDetails(historyManager.get('currentSubSystemUid'),repoDetailsLoaded);
+
 
 					}
 					else if(history_view.mode == 'management')
@@ -406,14 +420,24 @@ var g = (function(gamma) {
 						        		var analysis_id 		= history_view.request_data.analysis_req_id;
 
 										gamma.admin.analysis.analysis_details.loadAnalysisDetails(analysis_queue_name, analysis_id, subsystem_uid);
-										break;
+															case 'recent_scan_queue_details' :  // Analysis Queue
+										var subsystem_uid       = history_view.request_data.repositoryUid;
+						        		var analysis_queue_name = history_view.request_data.analysis_queue_name;
+						        		var analysis_id 		= history_view.request_data.analysis_req_id;
+
+										gamma.admin.analysis.recent_scan_details.loadRecentAnalysisDetails(analysis_queue_name, analysis_id, subsystem_uid);
+
 							default:
 								break;
 
 						}
 						e.changeMode('management');
 						$(".tree-icon").addClass('hide');
+
+						$(document).attr('title','Embold - '+history_view.plugin_id);
+
 						$(document).attr('title','Gamma - '+history_view.plugin_id);
+
 						if(gamma.googleAnalyzeCode != "")
 						{
 							googleAnalyse();
@@ -523,7 +547,7 @@ var g = (function(gamma) {
 		}
 
 		//--------------CALLED WHEN 'RENDERING_COMPLETE' NOTIFICATION IS SENT-------------
-		function enablePanel() {			
+
 			if(e.request_register.length == 0)
 			{
 				// $("body").css("cursor", "auto");
@@ -669,15 +693,13 @@ var g = (function(gamma) {
 			}
 			g.loadPlugin((e.panelsManager.panels[0].panel).find('.content_holder'),historyManager.get('currentPlugin'),true);
 
-			$(document).off('click', '#run_analysis_container .available_scan_credit');
-			$(document).on('click', '#run_analysis_container .available_scan_credit', function (event) {
 				g.hideTreePanel();
 				e.changeMode('management');
 				g.pushHistory('admin_details', '', '', { 'default_parameter': 'license', 'breadcrumb': "license" }, 'management');
 				g.admin.left_menu.loadAdminDetails('license', true);
 				$('.left-menu-bar .left-menu-icon').removeClass('left-menu-active-item');
 				$('.left-menu-bar .left-menu-bottom-aligned .ic-admin').parent('.left-menu-icon').addClass('left-menu-active-item');
-				$(document).attr('title', 'Gamma - ' + i18next.t("common.page_title.admin_details") + ' : ' + i18next.t("admin.license"));
+
 			});
 			if(historyManager.get('currentRepoType') == 'remote')
 			{
@@ -697,6 +719,8 @@ var g = (function(gamma) {
         	g.loadPlugin((e.panelsManager.panels[0].panel).find('.content_holder'),historyManager.get('currentPlugin'),true);
 		}
 
+
+
 		function onTeamUpdate(){
 			historyManager.set('currentContext','systems');
         	g.setPluginHistory('subsystem_list');
@@ -715,12 +739,6 @@ var g = (function(gamma) {
 				g.setPluginHistory("repository_dashboard");
 			}
 		}
-		//================ this function is called when we select the subsystem from subsystem list ===================
-		function onSubsystemChange(selected_subsystem) {
-			historyManager.set('currentContext','subsystems');
-			selectedRepository = selected_subsystem;
-			historyManager.set('currentTaskTypeContext', '');
-			getRepositoryDetails(selectedRepository.uid, getRepositoryDetailsCallBack);
 		}
 
 		//--------------CALLED WHEN 'DATA_ERROR' NOTIFICATION IS SENT - COMMON FUNCTION TO HANDLE ERRORS -------------
@@ -735,7 +753,6 @@ var g = (function(gamma) {
 			{
 				notification = data_object.notification_name;
 			}
-				
 			/*if(error_code == "")//status is 0 when page not found
 				window.location.href = gamma.PAGE_NOT_FOUND;*/
 			if (error.code == 1759){
@@ -882,10 +899,7 @@ var g = (function(gamma) {
                 gamma.getLicenseDetails()
 					.then(license_summary => {
 						if (license_summary.scan_status_flag) {
-                            $('header .btn-container .available_scan_credit .scan_credit_value').html(license_summary.scan_credit);
-                        }
-						else {
-                            $('header .btn-container .available_scan_credit .scan_credit_value').html('Unlimited');
+
                         }
 				});
 			}
@@ -922,7 +936,7 @@ var g = (function(gamma) {
 			else{
 				window.location.hash = window.btoa(unescape(encodeURIComponent(history_obj_str)));
 			}
-			$(document).attr('title', 'Gamma - '+historyManager.get('currentPlugin').name);
+
 				if(gamma.googleAnalyzeCode != "")
 				{
 					googleAnalyse();
