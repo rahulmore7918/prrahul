@@ -37,14 +37,6 @@ var g = (function() {
 			PATH_ISSUE_LIST_DETAILS:"/gamma/api/issuelist/getissuelistmetadata",
             PATH_QUEUE_COUNT: "/repositories/scans/count",
 			PATH_CURRENT_ANALYSIS:"/repositories/scans",
-			PATH_EMBOLD: "https://docs.embold.io",
-			PATH_BREADCRUMB: "/views/repositories/",
-			PATH_TREE:"/views/repositories/",
-			PATH_SERVER_TIME:"/metadata/servertime",
-			PATH_LOGOUT: "/auth/logout",
-			PAGE_LOGIN: "login",
-			PAGE_ERROR: "license-summary",
-			PAGE_TEMPERED: "license-deactivated"
 
 	    };
 
@@ -95,7 +87,7 @@ var g = (function() {
 		// 	}else if(type =="js"){
 		// 		return "../"+name+"/plugin.js";
 		// 	}
-		// }
+
 		function sendErrorNotification(data,data_url,holder,notification_name,fadeout) {
 			data.holder 	= holder;
 			data.requestURL = DOMAIN_NAME + data_url;
@@ -304,10 +296,7 @@ var g = (function() {
 						gamma.application_mode = configData.mode;
 						gamma.languages = configData.languages;
 						gamma.partial_languages = configData.partial_languages;
-                        gamma.task_integration = configData.task_integration;
-                        gamma.re_languages = configData.re_languages;
-						gamma.gamma_website_host = configData.gamma_website_host;
-						gamma.helpHost = configData.helpHost;
+
 						gamma.gamma_website_env = configData.gamma_website_env;
 						gamma.mixpanel_token = configData.mixpanel_token;
 						gamma.intercom_app_id = configData.intercom_app_id;
@@ -325,11 +314,7 @@ var g = (function() {
 						gamma.enableREScan = configData.enableREScan ;
 						gamma.enablePRScan = configData.enablePRScan ;
                         API_VERSION = configData.apiVersion;
-                        gamma.API_VERSION = API_VERSION;
-                        gamma.apiEnabled = configData.apiEnabled;
-                        gamma.domain = configData.domain;
-                        gamma.osPostfix = configData.osPostfix;
-						gamma.BASE_URL = DOMAIN_NAME + "/api/" + API_VERSION;
+ma.BASE_URL = DOMAIN_NAME + "/api/" + API_VERSION;
 						if (configData.taskInsights == true || configData.taskInsights == "true") {
 							gamma.isTasksInsightsEnabled = true;
 						} else if (configData.taskInsights == false || configData.taskInsights == "false") {
@@ -389,7 +374,7 @@ var g = (function() {
 						} else {
 							eventObj.profile_properties['Paid domain'] = gamma.subdomain;
 						}
-						gamma.set_mixpanel_event("Embold portal login", gamma.mixpanel_uid, eventObj);
+
 
 						localStorage.removeItem("user_login");
 					}
@@ -433,18 +418,7 @@ var g = (function() {
 		}
 
 		function loggedout() {
-            var bannerCookie = localStorage.getItem('no-banner');
-            sessionStorage.clear();
-            localStorage.clear();
-            if(bannerCookie)
-            {
-                var now = new Date();
-                // this will set the expiration to 6 months
-                var expiry = new Date(now.getFullYear(), now.getMonth() + 6, now.getDate());
-                localStorage.setItem('no-banner', true, {
-                    expires: expiry
-                });
-            }
+
 			window.location.replace(g.paths.PAGE_LOGIN);
 			e.log("You have logout successfully");
 		}
@@ -506,8 +480,7 @@ var g = (function() {
 			'access_tokens': {},
 			'notifications': {},
 			'quality_profile': {},
-			'public_url': {},
-			'userDirectories':{},
+
 		};
 		gamma.tasks = {
 			'gamma_formatter':{},
@@ -523,12 +496,7 @@ var g = (function() {
 		gamma.issues_data 					= null;
 		gamma.leftMenuItem;
 
-        gamma.isOs = function() {
-            return _.contains(gamma.domain, gamma.osPostfix);
-        }
-        gamma.isAPIEnabled = function() {
-            return _.contains(["false", false], gamma.is_cloud) || (!gamma.isOs(gamma.domain) && _.contains(["true", true], gamma.is_cloud) && _.contains(["true", true], gamma.apiEnabled));
-        }
+
 		gamma.setLocale = function (locale) {
 			LOCALE = locale;
 		};
@@ -784,11 +752,7 @@ var g = (function() {
 				return 'Chrome';
 			}
 
-		};
-		gamma.uppercaseFirstLetter = function(string)
-        {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
+
 
 		gamma.getFormattedTime = function(timestamp1,timestamp2,useServerTime) {
 			var utc1 	= moment(timestamp1).utc();//new Date(timestamp1.getTime() + timestamp1.getTimezoneOffset() * 60000);
@@ -1046,7 +1010,7 @@ var g = (function() {
 								'LOC': (msg.LOC) ? msg.LOC : ''
 							}
 						};
-						g.admin.analysis.recent_scan_details.updateScanData(msg);
+
 						var report_msg = {};
 						if (msg.status == "SUCCESS" || msg.status == "FAIL" || msg.status == "ABORT" || msg.status == 'CANCEL' || msg.status == 'QUEUED') {
                             if (gamma.hasPermission('MANAGE_LICENSE')) {
@@ -1077,7 +1041,7 @@ var g = (function() {
 									//Opening Userlane popup after first successful scan
 									// setTimeout(function(){
 									// 	Userlane('openAssistant');
-									// }, 2000);
+
 								}
 							}
 							else if(msg.status == "FAIL" && msg.projectName !== undefined && msg.projectName != 'undefined')
@@ -1156,21 +1120,12 @@ var g = (function() {
 			});
 
 			socket.on('account_status',function(msg) {
-				var errorMsg = { "error": { "code": null, "name": "accountStatusUpdated", "message": g.print(msg), "status":"info" } }
-				logoutUserFromAllBrowsers(errorMsg);
-			});
 
-			socket.on('DELETE_DIRECTORY',function(msg) {
-				var errorMsg = { "error": { "code": null, "name": "accountStatusUpdated", "message": i18next.t('admin.ldap.'+ msg), "status":"info" } }
-				logoutUserFromAllBrowsers(errorMsg);
-			});
-
-			function logoutUserFromAllBrowsers(errorMsg){
 				g.addErrorAlert(errorMsg);
 				setTimeout(function(){
 					gamma.logout();
 				},3000);
-			}
+
 
 			socket.on('delete_subsystem',function(msg) {
 				e.notify('SOCKET_DELETE_SUBSYSTEM',msg);
@@ -1207,9 +1162,7 @@ var g = (function() {
 		 *
 		 * Example :-
 		 * Event with userId (gamma.mixpanel_uid) :- gamma.set_mixpanel_event("test me gamma ", 213);
-		 * Event with profileDetails 				     :- gamma.set_mixpanel_event("test me gamma ", 213 ,{ 'email': 'shahaji.patil@acellere.com', 'first_name': 'sameer', 'last_name': 'patil'});
-		 * Event with customDetails 				     :- gamma.set_mixpanel_event("test me gamma ", 213 , { 'project name': 'Embold test Project  ','owner details':'shahaji patil' });
-		 * Event with Profile and Custom Details 	     :- gamma.set_mixpanel_event("test me gamma ", 213 ,{ 'email': 'shahaji.patil@acellere.com', 'first_name': 'sameer', 'last_name': 'patil','project name': 'Embold test Project  ','owner details':'shahaji patil'});
+
 		**/
 		gamma.set_mixpanel_event = function (event, userId, eventDetails,increment) {
 			if (gamma.is_cloud) {

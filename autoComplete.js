@@ -1,21 +1,32 @@
 g.autoComplete = function(){
 
-    function renderAutoComplete(holder,data, notifyParam){
+
+
+    function renderAutoComplete(holder,data){
+
         holder.autocomplete({
             source: data,
             minLength: 1,
             response: function(event, ui) {
                 $(".autocomplete-loader").addClass("hide");
                 if(ui.content.length < 1){
+
                     renderNoMatchAutocomplete(holder);
+
+                    renderNoMatchAutocomplete();
+
                 }
             },
             select: function (event, ui) {
                 selectedAssignee = ui.item.value;
+
                 if(notifyParam){
                     e.notify(notifyParam, selectedAssignee);
                 }
                 hideNoMatchAutocomplete(holder);
+
+                hideNoMatchAutocomplete();
+
             },
             open: function() {
                 holder.addClass("active-autocomplete");
@@ -24,7 +35,7 @@ g.autoComplete = function(){
                 holder.removeClass("active-autocomplete");
             },
             search: function() {
-                $(".autocomplete-loader").removeClass("hide");
+
                 hideNoMatchAutocomplete(holder);
             }
         })
@@ -59,11 +70,25 @@ g.autoComplete = function(){
     }
     function hideNoMatchAutocomplete(holder){
         $(holder).removeClass("active-autocomplete");
+
+                hideNoMatchAutocomplete();
+            }
+           
+        });
+    }
+    function renderNoMatchAutocomplete(){
+        $('#assignee_input').addClass("active-autocomplete");
+        $(".no-match-autocomplete").show();
+    }
+    function hideNoMatchAutocomplete(){
+        $('#assignee_input').removeClass("active-autocomplete");
+
         $(".no-match-autocomplete").hide();
     }
 
     // Public functions
     return{
+
         renderAutoComplete: function(holder,data,notifyParam){
             renderAutoComplete(holder,data, notifyParam);
         },
@@ -74,5 +99,18 @@ g.autoComplete = function(){
             hideNoMatchAutocomplete(holder);
         }
     }
+
+
+        renderAutoComplete: function(holder,data){
+            renderAutoComplete(holder,data);
+        },
+        renderNoMatchAutocomplete: function(){
+            renderNoMatchAutocomplete();
+        },
+        hideNoMatchAutocomplete: function(){
+            hideNoMatchAutocomplete();
+        }
+    }
+ 
 
 }(g);

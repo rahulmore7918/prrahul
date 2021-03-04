@@ -8,8 +8,12 @@ var g = (function(gamma) {
 	var repository_name = '';
 	var fastScan=false, commitId;
 	var available_scans;
+
     var disableFastScan = ['cpp', 'objective_c', 'typescript', 'javascript'];
     const serviceProvider = ['git', 'github', 'bit', 'bitbucket', 'gitlab'];
+
+    var disableFastScan = ['cpp', 'objective_c', 'typescript'];
+
 
 	function updateAnalysisButtonState(analysis_details) {
 		//$('header .run_analysis').attr('data-subsystem_uid',analysis_details.subsystemId);
@@ -333,6 +337,7 @@ var g = (function(gamma) {
 
 		    popup_data.append(repository_outer_wrapper);
 
+
             var no_record_msg = $('<div />', { class: "no_record_msg h4 float_left hide" }).html(i18next.t('admin.no_data_found'));
 			var branch_list_wrapper = $('<div/>',{class:'branch_list_wrapper'});
 			var commitFieldWrapper = $('<div/>', { class: 'commit-field-wrapper hide inputbox_wraper' });
@@ -353,6 +358,9 @@ var g = (function(gamma) {
 			var panelTitleInfoContent;
             if($.inArray(branchDataArray.repoType.toLowerCase(), serviceProvider) !== -1)
             {
+
+		    if(branchDataArray.repoType.toLowerCase() == 'git' || branchDataArray.repoType.toLowerCase() == 'github'  || branchDataArray.repoType.toLowerCase() == 'bit' || branchDataArray.repoType.toLowerCase() == 'bitbucket'){
+
 				var selection_outer_wrapper = $('<div/>',{class:'selection_outer_wrapper'});
 				if (analysis_type.toLowerCase() == 'tag') {
 					switchButton = new e.switchButton({ width: 17, height: 17, show_tabs: 3, holder: selection_outer_wrapper, is_icons: true, icons: { first: 'ic-tags', second: 'ic-branch', third: 'ic-time' }, class: { first: 'branch_tags', second: 'branches', third: 'branch_commit' }, text: { first: i18next.t('common.run_analysis.tags'), second: i18next.t('common.run_analysis.branches'), third: i18next.t('common.run_analysis.commits') }, notify: { onParameterSelect: 'SWITCHBUTTON_SELECT' } });
@@ -371,15 +379,48 @@ var g = (function(gamma) {
 				}
 				search_wrapper.append(search_input);
 				popup_data.append(selection_outer_wrapper);
+
                 popup_data.append(search_wrapper);
                 if ((disableFastScan.indexOf(languageName)  > -1)){
+
+				popup_data.append(search_wrapper);
+			}
+
+			var no_record_msg = $('<div />', { class: "no_record_msg h4 float_left hide" }).html(i18next.t('admin.no_data_found'));
+			var branch_list_wrapper = $('<div/>',{class:'branch_list_wrapper'});
+			var commitFieldWrapper = $('<div/>', { class: 'commit-field-wrapper hide inputbox_wraper' });
+			var commitField = $('<div/>', { class: 'commit-field inputbox_wraper' });
+			var input_error = $('<div/>', { class: 'error-msg p color_bad' });
+			var commitInput = $('<input/>', { class: 'commit-input', type:"text", placeholder:"Enter Commit ID (Long Or Short)"});
+			commitField.append(commitInput, input_error);
+			commitFieldWrapper.append(commitField);
+			var incrementalScanWrapper = $('<div/>', { class: 'incremental-scan-wrapper fluid_row_checkbox_container' });
+			var scanCheckboxLabel = $('<label/>', { class: 'scan-checkbox-label' });
+			var scanCheckboxInput = $('<input/>', { class: "checkbox", type: "checkbox"});
+			var scanCheckboxCheckmark = $('<span/>', { class: 'criticality_checkmark scan-checkbox-checkmark checkmark' });
+			var scanCheckboxTitle = $('<label/>', { class: 'scan-checkbox-title inline-label' }).text(i18next.t('common.run_analysis.enable_fast_scan'));
+			scanCheckboxLabel.append(scanCheckboxInput, scanCheckboxCheckmark);
+			var panelTitleInfoIcon = $('<div/>', { class: 'panel_title_info_icon ic-info' });
+			incrementalScanWrapper.append(scanCheckboxLabel, scanCheckboxTitle, panelTitleInfoIcon);
+			var languageName = (branchDataArray.repoLanguage[0]).trim().toLowerCase();
+			var panelTitleInfoContent;
+
+			if (branchDataArray.repoType.toLowerCase() == 'git' || branchDataArray.repoType.toLowerCase() == 'github' || branchDataArray.repoType.toLowerCase() == 'bit' || branchDataArray.repoType.toLowerCase() == 'bitbucket') {
+				if ((disableFastScan.indexOf(languageName)  > -1)){
+
 					popup_data.append(commitFieldWrapper, no_record_msg, branch_list_wrapper);
 				}else{
 					popup_data.append(commitFieldWrapper, no_record_msg, branch_list_wrapper, incrementalScanWrapper);
 				}
+
 			} else {
                 popup_data.append(no_record_msg, branch_list_wrapper);
             }
+
+			}else{
+				popup_data.append(no_record_msg, branch_list_wrapper);
+			}
+
 			$('.incremental-scan-wrapper  .panel_title_info_icon').attr("id", 'fast_scan');
 
 			if (branchDataArray.gitSnapshots > 0) {
@@ -444,7 +485,9 @@ var g = (function(gamma) {
 			// 	$('.run_analysis_popup .popup_button_wrapper .run_analysis_button_wrapper').addClass('disabled');
 			// 	$('.warningPopUp').removeClass('hide');
 			// }
-		    if($.inArray(branchDataArray.repoType.toLowerCase(), serviceProvider) !== -1)
+	    if($.inArray(branchDataArray.repoType.toLowerCase(), serviceProvider) !== -1)
+	    if(branchDataArray.repoType.toLowerCase() == 'git' || branchDataArray.repoType.toLowerCase() == 'github' || branchDataArray.repoType.toLowerCase() == 'bit' || branchDataArray.repoType.toLowerCase() == 'bitbucket')
+
 			{
 		    	if(analysis_type == 'tag'){
 					$('.run_analysis_popup').find('.search_analysis_wrapper, .branch_list_wrapper').removeClass('hide');
@@ -535,7 +578,11 @@ var g = (function(gamma) {
 				gamma.project_language = $('.popup_container .subsystem_languages .project_language').attr('data-language_id');
 				if (available_scans > 0 || scan_credit == -1){
 
+
 					if($.inArray(branchDataArray.repoType.toLowerCase(), serviceProvider) !== -1){
+
+					if (branchDataArray.repoType.toLowerCase() == 'git' || branchDataArray.repoType.toLowerCase() == 'github' || branchDataArray.repoType.toLowerCase() == 'bit' || branchDataArray.repoType.toLowerCase() == 'bitbucket'){
+
 						var commitIdField = $(this).parents('.run_analysis_popup').find('.commit-input');
 						(commitIdField.val().trim() != "") ? commitId = commitIdField.val().trim() : commitId = "";
 					}
@@ -635,11 +682,18 @@ var g = (function(gamma) {
 				}
 			}else {
 				run_analysis_popup.closePopup();
+
 				g.admin.analysis.analysis_queue.loadAnalysisQueue();
 
 			}
 		}
 		var settings = { 'repoBranchOrTag': ($('.selected_branch').attr('data-actual')).trim(), 'snapshotLabel': ($('.selected_branch .selected_snapshot_input').val()).trim(), 'fastScan': fastScan, 'commitId': commitId, 'precheck': true };
+
+
+			}
+		}
+		var settings = { 'repoBranchOrTag': ($('.selected_branch').attr('data-actual')).trim(), 'snapshotLabel': ($('.selected_branch .selected_snapshot_input').val()).trim(), 'fastScan': fastScan, 'commitId': commitId };
+
 
         var customResponse = {
             success: {
@@ -647,7 +701,11 @@ var g = (function(gamma) {
                 message: i18next.t('admin.analysis_view.scan_page.started_successfully',{"repoName":branchDataArray.repoName})
             },
             error: {
+
                 isCustom: false
+
+                isCustom: true
+
             }
         };
 		e.postData('POST', `/repositories/${branchTagData.repoUid}/scan`, subsystemAddedToQueue, settings, customResponse);
@@ -844,9 +902,15 @@ var g = (function(gamma) {
 				target_btn.find('.btn-text').html('ABORTING');
 				target_btn.addClass('disabled');
 			}
+
 			else {
 				target_btn.find('.btn-text').html('Abort Scan');
 			}
+
+			else
+				target_btn.find('.btn-text').html('Abort Scan');
+
+
 			blincking_object[analysis_details.subsystemId] = setInterval(function() {
 				target_btn.find('.icon-container').toggleClass('analysis_button_icon_blinked');
 			},500);
