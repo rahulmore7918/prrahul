@@ -1,0 +1,22 @@
+section.full-height-wrapper.centered-form
+    div.container
+        //- TRIAL SIGN IN
+        div.outer-form-container
+            div.title-container
+                h2.name Sign in to Gamma Control Panel
+
+            div.form-container
+                form.form-signin(name='form', ng-submit='ctrl.login(form)', novalidate='')
+                    .form-group
+                        label Email
+                        input#email.line-input.form-text(type='email', name='email', ng-model='ctrl.user.email' )
+                    .form-group
+                        label Password
+                        input#password.line-input.form-text(type='password', name='password', ng-model='ctrl.user.password' )
+                    .form-group.has-error
+                        p.help-block.help-block-error(ng-show='(form.email.$error.required || form.password.$error.required) && ctrl.submitted') Please enter your email and password.
+                        p.help-block.help-block-error {{ ctrl.errors.other }}
+                    div.btn-container
+                        button.btn.green(type="submit")
+                            div.text-container
+                                span.btn-text Sign In
